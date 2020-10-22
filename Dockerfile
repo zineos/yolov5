@@ -1,18 +1,30 @@
 # Start FROM Nvidia PyTorch image https://ngc.nvidia.com/catalog/containers/nvidia:pytorch
-FROM nvcr.io/nvidia/pytorch:20.09-py3
+FROM nvcr.io/nvidia/pytorch:20.03-py3
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV TZ Asia/Shanghai
+ENV LANG C.UTF-8
+
+ARG PIP_TRUSTED_HOST=mirrors.aliyun.com
+ENV PIP_TRUSTED_HOST=${PIP_TRUSTED_HOST}
+ARG PIP_INDEX_URL=http://mirrors.aliyun.com/pypi/simple/
+ENV PIP_INDEX_URL=${PIP_INDEX_URL}
 
 # Install dependencies
 RUN pip install --upgrade pip
-# COPY requirements.txt .
-# RUN pip install -r requirements.txt
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 RUN pip install gsutil
+RUN apt-get update && apt-get install -y libgl1-mesa-glx \
+    --no-install-recommends \
+    openssh-server
 
 # Create working directory
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+#RUN mkdir -p /usr/src/app
+#WORKDIR /usr/src/app
 
 # Copy contents
-COPY . /usr/src/app
+#COPY . /usr/src/app
 
 # Copy weights
 #RUN python3 -c "from models import *; \
